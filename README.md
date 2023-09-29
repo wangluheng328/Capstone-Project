@@ -6,6 +6,7 @@
 ## Team Update
 
 9/29 Wes
+
 Resources related to project:
 1. IGV- a standalone PC genome
  browser:
