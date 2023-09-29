@@ -5,7 +5,7 @@
 
 ## Team Update
 
-| Date| Team Member    | Code Link                 | Summary                               |
+| Date| Team Member    | Commit / Code Link            | Summary                               |
 | -|----------------|---------------------------|---------------------------------------|
 | | | | |
 | | | | |
