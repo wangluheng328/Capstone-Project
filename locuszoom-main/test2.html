@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Necessary includes for LocusZoom.js -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@^5.16.0" type="text/javascript"></script>
+    <script src="./dist/locuszoom.app.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./dist/locuszoom.css" type="text/css"/>
+
+    <title>LocusZoom.js ~ Minimal Example</title>
+  </head>
+
+  <body>
+    <!--
+      This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
+      special data-attribute. See other examples for alternative ways to specify the region using JavaScript.
+    -->
+    <!-- <div id="lz-plot" data-region="10:114550452-115067678"></div> -->
+    <!-- Add img elements for the plots -->
+    <!-- <img id="cre" src="" alt="Plot 1">
+    <img id="bar" src="" alt="Plot 2">
+    <img id="box" src="" alt="Plot 3"> -->
+
+    <div id="lz-plot" data-region="10:114550452-115067678"></div>
+    <!-- <div id="lz-plot-2" data-region="10:114550452-115067678"></div> -->
+    <div id="lz-plot-3" data-region="10:114550452-115067678"></div>
+
+    <script type="text/javascript">
+      var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+      data_sources = new LocusZoom.DataSources()
+          .add("assoc", ["AssociationLZ", {url: apiBase + "statistic/single/", source: 45 }])
+          .add("ld", ["LDServer", { url: "https://portaldev.sph.umich.edu/ld/", source: '1000G', build: 'GRCh37', population: 'ALL' }])
+          .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/", build: 'GRCh37' }])
+          .add("access", ["TabixUrlSource", {
+              // Corresponds to: https://www.diabetesepigenome.org/files/DFF044MQE/
+              //   as processed from https://www.diabetesepigenome.org/annotations/DSR299XDW/
+              // Islet of Langerhans / Chicago analysis, from CROCPOT
+              url_data: 'https://locuszoom.s3-us-west-2.amazonaws.com/DFF044MQE_sorted.bed.gz',
+              parser_func: dega_bed_parser,
+              // We are fetching two elements, but only one of them is captured in the tabix index.
+              // Fetching 25% extra data on each side can ensure that things near the edge are returned when we query.
+              overfetch: 0.25,
+          }])
+          .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/", build: 'GRCh37' }])
+          .add("constraint", ["GeneConstraintLZ", { url: "https://gnomad.broadinstitute.org/api/", build: 'GRCh37' }]);
+  
+      // Get the standard association plot layout from LocusZoom's built-in layouts
+      var stateUrlMapping = { chr: "chrom", start: "start", end: "end", ldrefvar: 'ld_variant' };
+      // Fetch initial position from the URL, or use some defaults
+      var initialState = LzDynamicUrls.paramsFromUrl(stateUrlMapping);
+      if (!Object.keys(initialState).length) {
+          initialState = { chr: '10', start: 114176406, end: 115176406 };
+      }
+      layout = LocusZoom.Layouts.get("plot", "coaccessibility", { state: initialState });
+      LocusZoom.Layouts.mutate_attrs(layout, '$.panels[?(@.tag === "coaccessibility")]', (config) => {
+          config.title = { text: 'Pancreatic Islet alpha cells from snATAC-seq' };
+          config.toolbar.widgets.push(
+              {
+                  type: 'filter_field',
+                  position: 'right',
+                  layer_name: 'coaccessibility',
+                  field: 'access:score',
+                  field_display_html: 'Score',
+                  operator: '>=',
+                  data_type: 'number',
+              }
+          );
+          return config;
+      });
+  
+  
+      // Generate the LocusZoom plot, and reflect the initial plot state in url
+      window.plot = LocusZoom.populate("#lz-plot", data_sources, layout);
+  
+      // Changes in the plot can be reflected in the URL, and vice versa (eg browser back button can go back to
+      //   a previously viewed region)
+      LzDynamicUrls.plotUpdatesUrl(plot, stateUrlMapping);
+      LzDynamicUrls.plotWatchesUrl(plot, stateUrlMapping);
+  </script>
+  </body>
+</html>

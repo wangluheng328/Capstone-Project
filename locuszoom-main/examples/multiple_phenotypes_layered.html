@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
+
+    <!-- Necessary includes for LocusZoom.js -->
+    <link rel="stylesheet" href="../dist/locuszoom.css" type="text/css"/>
+   <script src="https://cdn.jsdelivr.net/npm/d3@^5.16.0" type="text/javascript"></script>
+    <script src="../dist/locuszoom.app.min.js" type="text/javascript"></script>
+
+    <!-- Helpers that use the external library to add functionality to LocusZoom -->
+    <script src="../dist/ext/lz-widget-addons.min.js" type="application/javascript"></script>
+
+    <title>LocusZoom.js ~ Multiple Phenotypes (Layered) Example</title>
+
+    <style>
+      body {
+        background-color: #FAFAFA;
+        margin: 0px 20px;
+      }
+      img {
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+
+  </head>
+
+  <body style="background-color: #FAFAFA; margin-left: 20px; margin-right: 20px;">
+    <div class="container">
+
+      <h1 style="margin-top: 1em;"><strong>LocusZoom.js</strong></h1>
+
+      <h3 style="float: left; color: #777">Multiple Phenotypes (Layered) Example</h3>
+      <h6 style="float: right;"><a href="../index.html">&lt; return home</a></h6>
+
+      <hr style="clear: both;">
+
+      <p>This example shows an approach to showing a common region covering multiple studies/phenotypes by rendered each phenotype as a different data layer in the same panel.</p>
+      <p>The top panel shows results in the region from four different studies, each rendered with a different color. LD information is not shown. Being a region view interactivity is enabled, so panning and zooming is possible. As the plot is navigated around the genome all layers will stay aligned and move in unison.</p>
+      <p>This example also features the <strong>Data Layers</strong> menu on the association panel. This menu is useful when working with multiple layers that may run together. Each layer can be faded (made mostly transparent), hidden, or removed altogether. Layers can also be sorted relative to one another in terms of z-index (depth).</p>
+
+      <p>
+        <a href="https://github.com/statgen/locuszoom/blob/master/examples/multiple_phenotypes_layered.html">View source code</a>
+      </p>
+
+      <div class="row">
+        <div class="two columns">
+          <h4>Top Hits</h4>
+          <style>ul.top_hits li { margin-bottom: 0rem; }</style>
+          <ul class="top_hits" style="padding-left: 0.2rem; min-width: 110px;"></ul>
+        </div>
+        <div class="ten columns">
+          <div id="plot" data-region="10:114550452-115067678"></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <footer style="text-align: center;">
+          &copy; Copyright <script>document.write(new Date().getFullYear())</script> <a href="https://github.com/statgen">The University of Michigan Center for Statistical Genetics</a><br>
+        </footer>
+      </div>
+
+    </div>
+
+    <script type="text/javascript">
+
+    // Define base data sources
+    var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+    var data_sources = new LocusZoom.DataSources()
+      .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/", build: 'GRCh37' }])
+      .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/",  build: 'GRCh37' }])
+      .add("constraint", ["GeneConstraintLZ", { url: "https://gnomad.broadinstitute.org/api/",  build: 'GRCh37' }]);
+
+    // Build the base layout
+    var association_panel_mods = {
+        data_layers: [
+            LocusZoom.Layouts.get("data_layer", "significance", { name: "Line of GWAS Significance" }),
+            LocusZoom.Layouts.get("data_layer", "recomb_rate", { namespace: { "recomb": "recomb" }, name: "Recombination Rate" })
+        ],
+        toolbar: LocusZoom.Layouts.get("panel", "association")["toolbar"]
+    };
+    association_panel_mods.toolbar.widgets.push({
+        type: "data_layers",
+        position: "right",
+        statuses: ["faded", "hidden"]
+    });
+    layout = {
+        width: 800,
+        responsive_resize: true,
+        max_region_scale: 1e6,
+        min_region_scale: 20000,
+        panels: [
+            LocusZoom.Layouts.get("panel", "association", association_panel_mods),
+            LocusZoom.Layouts.get("panel", "genes", { namespace: { "gene": "gene" } })
+        ],
+        toolbar: LocusZoom.Layouts.get("toolbar","standard_plot")
+    };
+
+    // Define a set of studies/phenotypes and loop through them to add a data source and data layer for each one
+    var phenos = [
+        { namespace: "fasting_glucose", title: "Fasting glucose meta-analysis", color: "rgb(212, 63, 58)", study_id: 31 },
+        { namespace: "fasting_insulin", title: "Fasting insulin meta-analysis", color: "rgb(238, 162, 54)", study_id: 32 },
+        { namespace: "triglycerides", title: "Triglycerides meta-analysis", color: "rgb(92, 184, 92)", study_id: 29 },
+        { namespace: "cholesterol", title: "Total cholesterol meta-analysis", color: "rgb(53, 126, 189)", study_id: 30 }
+    ];
+    phenos.forEach(function(pheno){
+        data_sources.add(pheno.namespace, ["AssociationLZ", {url: apiBase + "statistic/single/",  source: pheno.study_id }]);
+        var association_data_layer_mods = {
+            id: "associationpvalues_" + pheno.namespace,
+            name: pheno.title,
+            point_shape: "circle",
+            point_size: 40,
+            color: pheno.color,
+            legend: [
+                { shape: "circle", color: pheno.color, size: 40, label: pheno.title, class: "lz-data_layer-scatter" },
+            ],
+            tooltip: {
+                closable: true,
+                show: { or: ["highlighted", "selected"] },
+                hide: { and: ["unhighlighted", "unselected"] },
+                html: "<strong>" + pheno.title + "</strong><br>"
+                    + "<strong>{{assoc:variant|htmlescape}}</strong><br>"
+                    + "P Value: <strong>{{assoc:log_pvalue|logtoscinotation|htmlescape}}</strong><br>"
+                    + "Ref. Allele: <strong>{{assoc:ref_allele|htmlescape}}</strong><br>"
+            }
+        };
+        // Much like subclassing, overrides syntax isn't wel suited to removing things. Since we don't want to show
+        //  LD in this vis, we need to replace "namespace" and "data_operations" manually (if we put namespace in the overrides above,
+        //  it would merge the new namespaces with the old one, and LD would still be there)
+        const layer_layout = LocusZoom.Layouts.get("data_layer", "association_pvalues", association_data_layer_mods);
+        layer_layout.namespace =  { "assoc": pheno.namespace };
+        layer_layout.data_operations = [];
+        layout.panels[0].data_layers.push(layer_layout);
+    });
+
+    // Generate the LocusZoom plot
+    var plot = LocusZoom.populate("#plot", data_sources, layout);
+
+    // Create a method to parse a region string into a 600Kb genome range and load it
+    function jumpTo(region) {
+      var target = region.split(":");
+      var chr = target[0];
+      var pos = target[1];
+      var start = 0;
+      var end = 0;
+      if (!pos.match(/[-+]/)) {
+        start = +pos - 300000
+        end = +pos + 300000
+      }
+      plot.applyState({ chr: chr, start: start, end: end, ldrefvar: "" });
+      return false;
+    }
+
+    // Populate a list of top hits links for the plot
+    var top_hits = [
+      ["16:53819169", "FTO"],
+      ["15:58680954", "LIPC"],
+      ["2:21231524", "APOB"],
+      ["16:56959412", "CETP"],
+      ["7:44196069", "GCK"],
+      ["2:27518370", "GCKR"],
+      ["10:114758349", "TCF7L2"],
+      ["7:15052860", "DGKB"],
+      ["2:27772914", "MRPL33"],
+      ["6:20679709", "CDKAL1"],
+      ["19:11091630", "LDLR"],
+      ["11:116778201", "APOA1"],
+      ["8:19986711", "LPL"],
+      ["11:92708710", "MTNR1B"]
+    ];
+    top_hits.forEach(function(hit){
+      d3.select("ul.top_hits").append("li")
+        .html("<a href=\"javascript:void(0);\" onclick=\"javascript:jumpTo('" + hit[0] + "');\">" + hit[1] + "</a>");
+    });
+
+  </script>
+
+  </body>
+</html>

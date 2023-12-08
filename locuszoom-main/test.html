@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Necessary includes for LocusZoom.js -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@^5.16.0" type="text/javascript"></script>
+    <script src="./dist/locuszoom.app.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./dist/locuszoom.css" type="text/css"/>
+
+    <title>LocusZoom.js ~ Minimal Example</title>
+  </head>
+
+  <body>
+    <!-- This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
+      special data-attribute. See other examples for alternative ways to specify the region using JavaScript. -->
+    <div id="lz-plot" data-region="10:114550452-115067678"></div>
+
+    <div>
+      <!-- chromosome input -->
+      <input type="text" id="inputChromosome" placeholder="Enter Chromosome">
+      <br>
+      <input type="text" id="inputPosition" placeholder="Enter Variant Position">
+      <br>
+      <input type="text" id="inputStart" placeholder="Enter Panel Start Position">
+      <br>
+      <input type="text" id="inputEnd" placeholder="Enter Panel End Position">
+    </div>
+
+    <div>
+      <!-- Add a button to trigger the request -->
+      <button onclick="retrieveImages()">Retrieve</button>
+    </div>
+    <!-- Add img elements for the plots -->
+    <img id="photo" src="">
+
+    <script type="application/javascript">
+      "use strict";
+
+      async function retrieveImages() {
+        // Get the parameter from the input box
+        var chromosome = document.getElementById("inputChromosome").value;
+        var position = document.getElementById("inputPosition").value;
+        var start = document.getElementById("inputStart").value;
+        var end = document.getElementById("inputEnd").value;
+
+        // Perform an asynchronous fetch request to the server to retrieve the photo
+        var photoUrl = "https://example.com/api/retrieve-photo?chromosome=" + chromosome +
+               "&position=" + position +
+               "&start=" + start +
+               "&end=" + end;
+
+        try {
+          const response = await fetch(photoUrl);
+
+          if (!response.ok) {
+            throw new Error(`Failed to retrieve photo. Status: ${response.status}`);
+          }
+
+          // Convert the response to a blob and create an object URL for the image
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          // Update the image source
+          document.getElementById("photo").src = imageUrl;
+        } catch (error) {
+          console.error("Error retrieving photo:", error);
+        }
+      }
+
+      // Rest of your existing code...
+
+      var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+      var data_sources = new LocusZoom.DataSources()
+        .add("assoc", ["AssociationLZ", {url: apiBase + "statistic/single/", params: { source: 45, id_field: "variant" }}])
+        .add("ld", ["LDServer", { url: "https://portaldev.sph.umich.edu/ld/" }])
+        .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
+        .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
+        .add("constraint", ["GeneConstraintLZ", { url: "https://gnomad.broadinstitute.org/api/", params: { build: 'GRCh37' } }]);
+
+      var layout = LocusZoom.Layouts.get("plot", "standard_association", { state: { genome_build: 'GRCh37' } });
+
+      window.plot = LocusZoom.populate("#lz-plot", data_sources, layout);
+    </script>
+  </body>
+</html>
