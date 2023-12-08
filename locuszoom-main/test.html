@@ -44,13 +44,30 @@
         var end = document.getElementById("inputEnd").value;
 
         // Perform an asynchronous fetch request to the server to retrieve the photo
-        var photoUrl = "https://example.com/api/retrieve-photo?chromosome=" + chromosome +
-               "&position=" + position +
-               "&start=" + start +
-               "&end=" + end;
+        // var photoUrl = "https://example.com/api/retrieve-photo?chromosome=" + chromosome +
+        //        "&position=" + position +
+        //        "&start=" + start +
+        //        "&end=" + end;
+        var photoUrl = "http://127.0.0.1:5000/generate_plot"
+
+        var requestData = {
+          chromosome: chromosome,
+          position: position,
+          start: start,
+          end: end
+        };
+        
+        
+
 
         try {
-          const response = await fetch(photoUrl);
+          const response = await fetch(photoUrl, {
+            method: "POST", // Use POST method to send JSON data in the request body
+            headers: {
+              "Content-Type": "application/json" // Specify that you are sending JSON data
+            },
+            body: JSON.stringify(requestData) // Convert the object to a JSON string and send it in the body
+          });
 
           if (!response.ok) {
             throw new Error(`Failed to retrieve photo. Status: ${response.status}`);
