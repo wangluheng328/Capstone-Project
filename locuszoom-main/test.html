@@ -7,6 +7,25 @@
     <script src="./dist/locuszoom.app.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="./dist/locuszoom.css" type="text/css"/>
 
+    <style>
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+  
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+  
+      #cre,
+      #imageC {
+        display: block;
+        margin: 10px auto;
+      }
+    </style>
+
     <title>LocusZoom.js ~ Minimal Example</title>
   </head>
 
@@ -24,6 +43,8 @@
       <input type="text" id="inputStart" placeholder="Enter Panel Start Position">
       <br>
       <input type="text" id="inputEnd" placeholder="Enter Panel End Position">
+      <br>
+      <input type="text" id="inputMappedGene" placeholder="Enter Mapped Gene">
     </div>
 
     <div>
@@ -31,7 +52,8 @@
       <button onclick="retrieveImages()">Retrieve</button>
     </div>
     <!-- Add img elements for the plots -->
-    <img id="photo" src="">
+    <img id="cre" src="">
+    <img id="imageC" src="">
 
     <script type="application/javascript">
       "use strict";
@@ -42,15 +64,25 @@
         var position = document.getElementById("inputPosition").value;
         var start = document.getElementById("inputStart").value;
         var end = document.getElementById("inputEnd").value;
+        var mappedGene = document.getElementById("inputMappedGene").value;
+
 
         // Perform an asynchronous fetch request to the server to retrieve the photo
         // var photoUrl = "https://example.com/api/retrieve-photo?chromosome=" + chromosome +
         //        "&position=" + position +
         //        "&start=" + start +
         //        "&end=" + end;
-        var photoUrl = "http://127.0.0.1:5000/generate_plot"
+        var CREUrl = "http://127.0.0.1:7777/generate_CRE_plot"
+        var deltaSVMUrl = "http://127.0.0.1:6666/generate_deltasvm_plot'"
 
-        var requestData = {
+        var CRErequestData = {
+          chromosome: chromosome,
+          position: position,
+          start: start,
+          end: end
+        };
+
+        var imageCrequestData = {
           chromosome: chromosome,
           position: position,
           start: start,
@@ -59,9 +91,9 @@
         
         
 
-
+        // get CRE
         try {
-          const response = await fetch(photoUrl, {
+          const response = await fetch(CREUrl, {
             method: "POST", // Use POST method to send JSON data in the request body
             headers: {
               "Content-Type": "application/json" // Specify that you are sending JSON data
@@ -78,13 +110,34 @@
           const imageUrl = URL.createObjectURL(blob);
 
           // Update the image source
-          document.getElementById("photo").src = imageUrl;
+          document.getElementById("cre").src = imageUrl;
+        } catch (error) {
+          console.error("Error retrieving photo:", error);
+        }
+
+        // get image C
+        try {
+          const response = await fetch(deltaSVMUrl, {
+            method: "POST", 
+            headers: {
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(requestData) 
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to retrieve photo. Status: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          document.getElementById("imageC").src = imageUrl;
         } catch (error) {
           console.error("Error retrieving photo:", error);
         }
       }
 
-      // Rest of your existing code...
 
       var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
       var data_sources = new LocusZoom.DataSources()
