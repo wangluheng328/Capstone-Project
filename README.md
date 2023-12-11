@@ -22,5 +22,14 @@ https://github.com/statgen/locuszoom
 https://github.com/broadinstitute/dig-bioindex
 
 
+12/11 Zejun
+
+Finished connections between front-end and back-end for deltaSVM graph and TPM violin plot, and successfully generated plots.
+Data for the CRE plot and deltaSVM graph is on AWS S3.
+The database for TPM violin plot is stored locally in a MySQL database.
+This local MySQL database will be moved to AWS RDS service.
+For deltaSVM graph, we are currently using rsid to retrieve records but will switch to chromosome position + allele if we can find a way to store the "rsid-position+allele relation" file. 
+
+
 
 ## Links
