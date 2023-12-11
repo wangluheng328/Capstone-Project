@@ -8,38 +8,67 @@
     <link rel="stylesheet" href="./dist/locuszoom.css" type="text/css"/>
 
     <style>
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-  
       body {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          width: 60%; /* Set overall width to 60% of the screen */
+          margin: auto; /* Center the content horizontally */
       }
-  
-      #cre,
-      #imageC {
-        display: block;
-        margin: 10px auto;
-      }
-    </style>
 
+      #lz-plot, #cre, #imageC {
+          width: 100%; /* Set the width of these elements to 100% of the parent container */
+      }
+
+      img {
+          max-width: 100%;
+          height: auto;
+      }
+
+      #cre, #imageC, #imageD {
+          display: block;
+          margin: 10px auto;
+      }
+
+      #cre {
+          margin-right: 50%;
+      }
+
+      .parameters-container {
+          width: 30%; /* Set a specific width for the parameters container */
+          margin: auto; /* Center the parameters horizontally */
+      }
+
+      input {
+          width: 100%; /* Set the width of input elements to 100% of the parent container */
+          box-sizing: border-box;
+          margin-bottom: 5px;
+      }
+
+      button {
+          width: 100%; /* Set the width of the button to 100% of the parent container */
+          display: block;
+          margin: 0 auto; /* Center the button horizontally */
+      }
+
+    </style>
+  
     <title>LocusZoom.js ~ Minimal Example</title>
   </head>
 
   <body>
-    <!-- This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
-      special data-attribute. See other examples for alternative ways to specify the region using JavaScript. -->
-    <div id="lz-plot" data-region="10:114550452-115067678"></div>
-
+    <div id="plots">
+      <!-- This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
+        special data-attribute. See other examples for alternative ways to specify the region using JavaScript. -->
+      <div id="lz-plot" data-region="10:114550452-115067678"></div>
+  
+      <!-- Add img elements for the plots -->
+      <img id="cre" src="">
+      <img id="imageC" src="">
+      <img id="imageD" src="">
     </div>
-    <!-- Add img elements for the plots -->
-    <img id="cre" src="">
-    <img id="imageC" src="">
 
-    <div>
+    <div class="parameters-container">
       <!-- chromosome input -->
       <input type="text" id="inputChromosome" placeholder="Enter Chromosome">
       <br>
@@ -49,18 +78,16 @@
       <br>
       <input type="text" id="inputEnd" placeholder="Enter Panel End Position in 10^6">
       <br>
-      <input type="text" id="inputMappedGene" placeholder="Enter Mapped Gene">
+      <input type="text" id="inputGene" placeholder="Enter Gene">
       <br>
       <input type="text" id="inputrsid1" placeholder="Enter rsid1">
       <br>
       <input type="text" id="inputrsid2" placeholder="Enter rsid2">
-    </div>
-
-    <div>
+      <br>
       <!-- Add a button to trigger the request -->
       <button onclick="retrieveImages()">Retrieve</button>
-    
-
+  </div>
+  
     <script type="application/javascript">
       "use strict";
 
@@ -70,7 +97,7 @@
         var position = document.getElementById("inputPosition").value;
         var start = document.getElementById("inputStart").value;
         var end = document.getElementById("inputEnd").value;
-        var mappedGene = document.getElementById("inputMappedGene").value;
+        var gene = document.getElementById("inputGene").value;
         var rsid1 = document.getElementById("inputrsid1").value;
         var rsid2 = document.getElementById("inputrsid2").value;
 
@@ -82,13 +109,14 @@
         //        "&end=" + end;
         var CREUrl = "http://127.0.0.1:7777/generate_CRE_plot"
         var deltaSVMUrl = "http://127.0.0.1:7778/generate_deltasvm_plot"
+        var TPMUrl = "http://127.0.0.1:7779/generate_tpm_plot"
 
-        var imageCrequestData = {
+        var reqData = {
           chromosome: chromosome,
           position: position,
           start: start,
           end: end,
-          gene: mappedGene,
+          gene: gene,
           rsid1: rsid1,
           rsid2: rsid2
         };
@@ -102,7 +130,7 @@
             headers: {
               "Content-Type": "application/json" // Specify that you are sending JSON data
             },
-            body: JSON.stringify(imageCrequestData) // Convert the object to a JSON string and send it in the body
+            body: JSON.stringify(reqData) // Convert the object to a JSON string and send it in the body
           });
 
           if (!response.ok) {
@@ -126,7 +154,7 @@
             headers: {
               "Content-Type": "application/json" 
             },
-            body: JSON.stringify(imageCrequestData) 
+            body: JSON.stringify(reqData) 
           });
 
           if (!response.ok) {
@@ -137,6 +165,28 @@
           const imageUrl = URL.createObjectURL(blob);
 
           document.getElementById("imageC").src = imageUrl;
+        } catch (error) {
+          console.error("Error retrieving photo:", error);
+        }
+
+        // get image D
+        try {
+          const response = await fetch(TPMUrl, {
+            method: "POST", 
+            headers: {
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(reqData) 
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to retrieve photo. Status: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          document.getElementById("imageD").src = imageUrl;
         } catch (error) {
           console.error("Error retrieving photo:", error);
         }
