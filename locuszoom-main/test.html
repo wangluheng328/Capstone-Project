@@ -34,6 +34,11 @@
       special data-attribute. See other examples for alternative ways to specify the region using JavaScript. -->
     <div id="lz-plot" data-region="10:114550452-115067678"></div>
 
+    </div>
+    <!-- Add img elements for the plots -->
+    <img id="cre" src="">
+    <img id="imageC" src="">
+
     <div>
       <!-- chromosome input -->
       <input type="text" id="inputChromosome" placeholder="Enter Chromosome">
@@ -45,15 +50,16 @@
       <input type="text" id="inputEnd" placeholder="Enter Panel End Position">
       <br>
       <input type="text" id="inputMappedGene" placeholder="Enter Mapped Gene">
+      <br>
+      <input type="text" id="inputrsid1" placeholder="Enter rsid1">
+      <br>
+      <input type="text" id="inputrsid2" placeholder="Enter rsid2">
     </div>
 
     <div>
       <!-- Add a button to trigger the request -->
       <button onclick="retrieveImages()">Retrieve</button>
-    </div>
-    <!-- Add img elements for the plots -->
-    <img id="cre" src="">
-    <img id="imageC" src="">
+    
 
     <script type="application/javascript">
       "use strict";
@@ -65,6 +71,8 @@
         var start = document.getElementById("inputStart").value;
         var end = document.getElementById("inputEnd").value;
         var mappedGene = document.getElementById("inputMappedGene").value;
+        var rsid1 = document.getElementById("inputrsid1").value;
+        var rsid2 = document.getElementById("inputrsid2").value;
 
 
         // Perform an asynchronous fetch request to the server to retrieve the photo
@@ -75,18 +83,14 @@
         var CREUrl = "http://127.0.0.1:7777/generate_CRE_plot"
         var deltaSVMUrl = "http://127.0.0.1:6666/generate_deltasvm_plot'"
 
-        var CRErequestData = {
-          chromosome: chromosome,
-          position: position,
-          start: start,
-          end: end
-        };
-
         var imageCrequestData = {
           chromosome: chromosome,
           position: position,
           start: start,
-          end: end
+          end: end,
+          mappedGene: mappedGene,
+          rsid1: rsid1,
+          rsid2: rsid2
         };
         
         
