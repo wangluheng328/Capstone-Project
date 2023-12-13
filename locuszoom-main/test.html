@@ -141,6 +141,18 @@
         var multipliedValueEnd = floatValueEnd * Math.pow(10, 6);
         var resultStringEnd = multipliedValueEnd.toString();
         document.getElementById("lz-plot").setAttribute("data-region", chromosome + ":" + resultStringStart + "-" + resultStringEnd);
+
+        var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+        var data_sources = new LocusZoom.DataSources()
+          .add("assoc", ["AssociationLZ", {url: apiBase + "statistic/single/", params: { source: 45, id_field: "variant" }}])
+          .add("ld", ["LDServer", { url: "https://portaldev.sph.umich.edu/ld/" }])
+          .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
+          .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
+          .add("constraint", ["GeneConstraintLZ", { url: "https://gnomad.broadinstitute.org/api/", params: { build: 'GRCh37' } }]);
+
+        var layout = LocusZoom.Layouts.get("plot", "standard_association", { state: { genome_build: 'GRCh37' } });
+
+        window.plot = LocusZoom.populate("#lz-plot", data_sources, layout);
         
 
         // get CRE
@@ -239,17 +251,7 @@
         }
       }
 
-      var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
-      var data_sources = new LocusZoom.DataSources()
-        .add("assoc", ["AssociationLZ", {url: apiBase + "statistic/single/", params: { source: 45, id_field: "variant" }}])
-        .add("ld", ["LDServer", { url: "https://portaldev.sph.umich.edu/ld/" }])
-        .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
-        .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
-        .add("constraint", ["GeneConstraintLZ", { url: "https://gnomad.broadinstitute.org/api/", params: { build: 'GRCh37' } }]);
-
-      var layout = LocusZoom.Layouts.get("plot", "standard_association", { state: { genome_build: 'GRCh37' } });
-
-      window.plot = LocusZoom.populate("#lz-plot", data_sources, layout);
+     
     </script>
   </body>
 </html>
