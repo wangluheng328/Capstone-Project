@@ -57,70 +57,90 @@
   </head>
 
   <body>
-    <div id="plots">
-      <!-- This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
-        special data-attribute. See other examples for alternative ways to specify the region using JavaScript. -->
-      <div id="lz-plot" data-region="10:114550452-115067678"></div>
-  
-      <!-- Add img elements for the plots -->
-      <img id="cre" src="">
-      <img id="imageC" src="">
-      <img id="imageD" src="">
-    </div>
 
     <div class="parameters-container">
-      <!-- chromosome input -->
-      <input type="text" id="inputChromosome" placeholder="Enter Chromosome">
+      <!-- parameters for gwas and cre -->
       <br>
-      <input type="text" id="inputPosition" placeholder="Enter Variant Position">
+      <input type="text" id="inputChromosome" placeholder="Enter Chromosome">
       <br>
       <input type="text" id="inputStart" placeholder="Enter Panel Start Position in 10^6">
       <br>
       <input type="text" id="inputEnd" placeholder="Enter Panel End Position in 10^6">
       <br>
-      <input type="text" id="inputGene" placeholder="Enter Gene">
+      <!-- Add a button to trigger the request -->
+      <button onclick="retrieveGWASandCRE()">Retrieve GWAS and CRE</button>
+      <br>
+      <br>
+    </div>
+
+    <div id="plots">
+      <!-- This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
+        special data-attribute. -->
+      <div id="lz-plot" data-region="10:114550452-115067678"></div>
+  
+      <!-- Add img elements for the plots -->
+      <img id="cre" src="">
+      
+    </div>
+
+    <div class="parameters-container">
       <br>
       <input type="text" id="inputrsid1" placeholder="Enter rsid1">
       <br>
       <input type="text" id="inputrsid2" placeholder="Enter rsid2">
       <br>
       <!-- Add a button to trigger the request -->
-      <button onclick="retrieveImages()">Retrieve</button>
-  </div>
+      <button onclick="retrieveDeltaSVM()">Retrieve DeltaSVM</button>
+      <br>
+      <br>
+    </div>
+
+    <div id="plots2">
+      <img id="imageC" src="">
+    </div>
+
+    <div class="parameters-container">
+      <br>
+      <input type="text" id="inputGene" placeholder="Enter Gene">
+      <br>
+      <!-- Add a button to trigger the request -->
+      <button onclick="retrieveTPM()">Retrieve TPM</button>
+      <br>
+      <br>
+    </div>
+
+    <div id="plots3">
+      <img id="imageD" src="">
+    </div>
   
     <script type="application/javascript">
       "use strict";
 
-      async function retrieveImages() {
+      async function retrieveGWASandCRE() {
         // Get the parameter from the input box
         var chromosome = document.getElementById("inputChromosome").value;
-        var position = document.getElementById("inputPosition").value;
         var start = document.getElementById("inputStart").value;
         var end = document.getElementById("inputEnd").value;
-        var gene = document.getElementById("inputGene").value;
-        var rsid1 = document.getElementById("inputrsid1").value;
-        var rsid2 = document.getElementById("inputrsid2").value;
 
-
-        // Perform an asynchronous fetch request to the server to retrieve the photo
-        // var photoUrl = "https://example.com/api/retrieve-photo?chromosome=" + chromosome +
-        //        "&position=" + position +
-        //        "&start=" + start +
-        //        "&end=" + end;
         var CREUrl = "http://127.0.0.1:7777/generate_CRE_plot"
-        var deltaSVMUrl = "http://127.0.0.1:7778/generate_deltasvm_plot"
-        var TPMUrl = "http://127.0.0.1:7779/generate_tpm_plot"
 
         var reqData = {
           chromosome: chromosome,
-          position: position,
           start: start,
-          end: end,
-          gene: gene,
-          rsid1: rsid1,
-          rsid2: rsid2
+          end: end
         };
         
+        // Update the data-region attribute with the new chromosome number
+
+        // Convert the string to a float, multiply by 10^6, and convert back to string
+        var floatValueStart = parseFloat(start);
+        var multipliedValueStart = floatValueStart * Math.pow(10, 6);
+        var resultStringStart = multipliedValueStart.toString();
+
+        var floatValueEnd = parseFloat(end);
+        var multipliedValueEnd = floatValueEnd * Math.pow(10, 6);
+        var resultStringEnd = multipliedValueEnd.toString();
+        document.getElementById("lz-plot").setAttribute("data-region", chromosomeNumber + ":" + resultStringStart + "-" + resultStringEnd);
         
 
         // get CRE
@@ -146,6 +166,22 @@
         } catch (error) {
           console.error("Error retrieving photo:", error);
         }
+      }
+
+      async function retrieveDeltaSVM() {
+        // Get the parameter from the input box
+        var chromosome = document.getElementById("inputChromosome").value;
+        var rsid1 = document.getElementById("inputrsid1").value;
+        var rsid2 = document.getElementById("inputrsid2").value;
+        
+        var deltaSVMUrl = "http://127.0.0.1:7778/generate_deltasvm_plot"
+
+        var reqData = {
+          chromosome: chromosome,
+          rsid1: rsid1,
+          rsid2: rsid2
+        };
+        
 
         // get image C
         try {
@@ -168,6 +204,17 @@
         } catch (error) {
           console.error("Error retrieving photo:", error);
         }
+      }
+
+      async function retrieveTPM() {
+        // Get the parameter from the input box
+        var gene = document.getElementById("inputGene").value;
+        
+        var TPMUrl = "http://127.0.0.1:7779/generate_tpm_plot"
+
+        var reqData = {
+          gene: gene
+        };
 
         // get image D
         try {
@@ -191,7 +238,6 @@
           console.error("Error retrieving photo:", error);
         }
       }
-
 
       var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
       var data_sources = new LocusZoom.DataSources()
