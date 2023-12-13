@@ -85,10 +85,7 @@
 
     <div class="parameters-container">
       <br>
-      <input type="text" id="inputrsid1" placeholder="Enter rsid1">
-      <br>
-      <input type="text" id="inputrsid2" placeholder="Enter rsid2">
-      <br>
+      <input type="text" id="chr_position_allele" placeholder="Enter chromosome:position_allele">
       <!-- Add a button to trigger the request -->
       <button onclick="retrieveDeltaSVM()">Retrieve DeltaSVM</button>
       <br>
@@ -182,16 +179,12 @@
 
       async function retrieveDeltaSVM() {
         // Get the parameter from the input box
-        var chromosome = document.getElementById("inputChromosome").value;
-        var rsid1 = document.getElementById("inputrsid1").value;
-        var rsid2 = document.getElementById("inputrsid2").value;
+        var chr_position_allele = document.getElementById("chr_position_allele").value;
         
         var deltaSVMUrl = "http://127.0.0.1:7778/generate_deltasvm_plot"
 
         var reqData = {
-          chromosome: chromosome,
-          rsid1: rsid1,
-          rsid2: rsid2
+          chr_position_allele:chr_position_allele
         };
         
 
