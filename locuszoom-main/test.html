@@ -14,6 +14,22 @@
           box-sizing: border-box;
           width: 60%; /* Set overall width to 60% of the screen */
           margin: auto; /* Center the content horizontally */
+
+          background-image: url('background.jpg');
+          background-repeat: repeat;
+          background-attachment: fixed; /* Fixed to ensure the watermark stays in place */
+          background-size: 600px 450px;
+          
+      }
+      body::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(38, 33, 33, 0.5); /* Set opacity to 0.5 (adjust as needed) */
+          z-index: -1; /* Place the pseudo-element behind the content */
       }
 
       #lz-plot, #cre, #imageC {
