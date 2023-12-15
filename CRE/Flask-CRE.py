@@ -91,4 +91,4 @@ def generate_CRE_plot():
 
 # Run the Flask App
 if __name__ == '__main__':
-    app.run(port=7777)
+    app.run(host='0.0.0.0', port=7777)
