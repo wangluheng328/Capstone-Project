@@ -43,14 +43,13 @@ def draw_CRE_barchart(chrom, start_pos, end_pos=False, dfs=datasets, tissues = [
     
     y_positions = {tissue: i+1 for i, tissue in enumerate(tissues)}
     
-    fig, ax = plt.subplots(figsize=(14, 5))  #(20,5)
+    fig, ax = plt.subplots(figsize=(14, 5))
     def draw_bars(df, tissue_name, color):
         df_filtered = df[(df['chr'] == chrom) & (df['start'] >= start_pos) & (df['end'] <= end_pos)]
         for index, row in df_filtered.iterrows():
             width = row['end'] - row['start']
             ax.barh(y_positions[tissue_name], width, left=row['start'], color=color)
      
-    
     colors = ['purple','green', 'blue', 'red']
     for df, tissue_name, color in zip(dfs, tissues, colors):
         draw_bars(df, tissue_name, color)
@@ -58,10 +57,7 @@ def draw_CRE_barchart(chrom, start_pos, end_pos=False, dfs=datasets, tissues = [
     ax.text(1, -0.15, chrom, verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, fontsize=10)
     ax.set_yticks(list(y_positions.values()))
     ax.set_yticklabels(list(y_positions.keys()),size=10)
-    
-    
     ax.set_xlim(start_pos-1e4, end_pos+1e4)
-    
     plt.ylabel('CRE',size=15)
 
 
@@ -71,7 +67,6 @@ def generate_CRE_plot():
     start_time = time.time()
     
     data = request.get_json()
-    
     chrom = data.get('chromosome')
     start_pos = data.get('start')
     end_pos = data.get('end', False)
