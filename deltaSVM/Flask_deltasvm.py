@@ -90,4 +90,4 @@ def generate_deltasvm_plot():
 
 # Run the Flask App
 if __name__ == '__main__':
-    app.run(port=7778)
+    app.run()
