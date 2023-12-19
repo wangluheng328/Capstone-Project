@@ -33,6 +33,7 @@ CORS(app)
 
 bucket_name = 'capstone-deltasvm'
 datasets = load_deltasvm_datasets(bucket_name)
+print('data set load success')
 
 
 def plot_delta_svm(datasets, chr_position_allele):
@@ -74,6 +75,7 @@ def generate_deltasvm_plot():
 
     # Call the plot function
     plot_delta_svm(datasets, chr_position_allele)
+    print('plot success')
 
     # Save the plot to a BytesIO object
     buf = io.BytesIO()
