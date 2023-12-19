@@ -33,7 +33,7 @@ https://github.com/broadinstitute/dig-bioindex
 
 12/19 Wes
 
-Deploy deltaSVM server
+### Deploy GWAS and CRE server
 
 A. Launch EC2 instance
 1. Come up with an EC2 instance name
@@ -41,6 +41,47 @@ A. Launch EC2 instance
 3. Select t2.micro (free tier)
 4. Create a new key pair (select .ppk)
 5. Launch
+
+B. Configure Security Group
+1. Go to instance detail page
+2. Go to Security tab below
+3. Go to security group
+4. Add inbound rule
+5. Select Custom TCP, port range 8100, source Anywhere-IPv4
+6. Select HTTP, source Anywhere-IPv4
+7. Select HTTPS, source Anywhere-IPv4
+8. Save rules
+
+C. Deploy (after connected to the instance by clicking Connect)
+1. sudo su -
+2. yum update -y
+3. yum install httpd -y
+4. yum install python3-pip
+5. yum install git
+6. yum install tmux
+7. service httpd start
+8. git clone this repository
+9. cd into locuszoom-main directory
+10. cp -r * /var/www/html
+11. tmux
+12. pip install -r requirements.txt
+13. cd into CRE directory
+14. python3 Flask-CRE.py
+
+D. Note
+
+In the index.html file, you need to change the CREUrl, deltaSVMUrl and TPMUrl to corresponding server IP endpoints. For instance, assuming your deltaSVM server is running on the IP address 12.34.567.890, then deltaSVMUrl should be http://12.34.567.890:8101/generate_tpm_plot. For CRE, the port is 8100, and TPM 8102. Modify correspondingly.
+
+
+### Deploy deltaSVM server
+
+A. Launch EC2 instance
+1. Come up with an EC2 instance name
+2. Select Amazon Linux (Ubuntu also works but below all "yum" need to be replaced by "apt-get")
+3. Select t2.micro (free tier)
+4. Create a new key pair (select .ppk)
+5. Launch
+
 B. Configure Security Group
 1. Go to instance detail page
 2. Go to Security tab below
@@ -48,6 +89,7 @@ B. Configure Security Group
 4. Add inbound rule
 5. Select Custom TCP, port range 8101, source Anywhere-IPv4
 6. Save rules
+
 C. Deploy (after connected to the instance by clicking Connect)
 1. sudo su -
 2. yum install python3-pip
@@ -58,7 +100,7 @@ C. Deploy (after connected to the instance by clicking Connect)
 7. pip install -r requirements.txt
 8. python3 Flask-deltasvm.py
 
-Deploy TPM server
+### Deploy TPM server
 
 A. Launch EC2 instance
 1. Come up with an EC2 instance name
@@ -66,6 +108,7 @@ A. Launch EC2 instance
 3. Select t2.micro (free tier)
 4. Create a new key pair (select .ppk)
 5. Launch
+
 B. Configure Security Group
 1. Go to instance detail page
 2. Go to Security tab below
@@ -73,6 +116,7 @@ B. Configure Security Group
 4. Add inbound rule
 5. Select Custom TCP, port range 8102, source Anywhere-IPv4
 6. Save rules
+
 C. Deploy (after connected to the instance by clicking Connect)
 1. sudo su -
 2. yum install python3-pip
