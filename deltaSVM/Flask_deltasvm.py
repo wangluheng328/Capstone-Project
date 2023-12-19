@@ -63,8 +63,9 @@ def plot_delta_svm(datasets, chr_position_allele):
 
 
 
-@app.route('/generate_deltasvm_plot', methods=['POST'])
+@app.route('/generate_deltasvm_plot')
 def generate_deltasvm_plot():
+    return 'hi'
     
     start_time = time.time()
     
