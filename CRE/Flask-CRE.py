@@ -87,6 +87,10 @@ def generate_CRE_plot():
     # Send the plot as a response
     return send_file(buf, mimetype='image/jpeg')
 
+@app.route('/test')
+def test():
+    return "Connection Success!"
+
 
 
 # Run the Flask App
