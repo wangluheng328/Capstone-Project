@@ -70,7 +70,7 @@ C. Deploy (after connected to the instance by clicking Connect)
 
 D. Note
 
-In the index.html file, you need to change the CREUrl, deltaSVMUrl and TPMUrl to corresponding server IP endpoints. For instance, assuming your deltaSVM server is running on the IP address 12.34.567.890, then deltaSVMUrl should be http://12.34.567.890:8101/generate_tpm_plot. For CRE, the port is 8100, and TPM 8102. Modify correspondingly.
+In the index.html file, you need to change the CREUrl, deltaSVMUrl and TPMUrl to corresponding server IP endpoints. For instance, assuming your deltaSVM server is running on the IP address 12.34.567.890, then deltaSVMUrl should be http://12.34.567.890:8101/generate_deltasvm_plot. For CRE, the port is 8100, and TPM 8102. Modify correspondingly.
 
 
 ### Deploy deltaSVM server
