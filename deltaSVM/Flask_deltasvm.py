@@ -89,6 +89,10 @@ def generate_deltasvm_plot():
     # Send the plot as a response
     return send_file(buf, mimetype='image/jpeg')
 
+@app.route('/test')
+def test():
+    return "Connection Success!"
+
 # Run the Flask App
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8101)
