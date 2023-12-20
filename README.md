@@ -33,6 +33,8 @@ https://github.com/broadinstitute/dig-bioindex
 
 12/19 Wes
 
+Deployed URL: http://3.15.180.14/
+
 ### Deploy GWAS and CRE server
 
 A. Launch EC2 instance
