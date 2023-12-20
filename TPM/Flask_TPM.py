@@ -32,7 +32,7 @@ def plot_tpm_violin(gene):
     positions = []
     for i, table in enumerate(tables):
         # Query
-        query = f"SELECT TPM FROM {table} WHERE Description = 'CLCN6'"
+        query = f"SELECT TPM FROM {table} WHERE Description = '{gene}'"
         df = pd.read_sql_query(query, conn)
         if not df.empty:
             all_data.append(df['TPM'])
