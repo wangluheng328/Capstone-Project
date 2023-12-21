@@ -104,7 +104,7 @@ def generate_CRE_variant_plot():
 
     # Call the plot function
     draw_CRE_barchart(chrom, start_pos, end_pos)
-    plt.axvline(x=variant_pos, color='black', linestyle='--')
+    plt.axvline(x=variant_pos, color='orange', linestyle='-')
 
     # Save the plot to a BytesIO object
     buf = io.BytesIO()
