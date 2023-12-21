@@ -202,9 +202,16 @@
         var chr_position_allele = document.getElementById("chr_position_allele").value;
         
         var deltaSVMUrl = "http://18.223.115.109:8101/generate_deltasvm_plot"
+        var variantCREUrl = "http://3.15.180.14:8100/generate_CRE_variant_plot"
 
-        var reqData = {
+        var reqDataDealtaSVM = {
           chr_position_allele:chr_position_allele
+        };
+
+        var reqDataCRE = {
+          chromosome: chromosome,
+          start: start,
+          end: end
         };
         
 
@@ -215,7 +222,7 @@
             headers: {
               "Content-Type": "application/json" 
             },
-            body: JSON.stringify(reqData) 
+            body: JSON.stringify(reqDataDealtaSVM) 
           });
 
           if (!response.ok) {
@@ -226,6 +233,31 @@
           const imageUrl = URL.createObjectURL(blob);
 
           document.getElementById("imageC").src = imageUrl;
+        } catch (error) {
+          console.error("Error retrieving photo:", error);
+        }
+
+
+        // get CRE with variant
+        try {
+          const response = await fetch(variantCREUrl, {
+            method: "POST", // Use POST method to send JSON data in the request body
+            headers: {
+              "Content-Type": "application/json" // Specify that you are sending JSON data
+            },
+            body: JSON.stringify(reqDataCRE) // Convert the object to a JSON string and send it in the body
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to retrieve photo. Status: ${response.status}`);
+          }
+
+          // Convert the response to a blob and create an object URL for the image
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          // Update the image source
+          document.getElementById("cre").src = imageUrl;
         } catch (error) {
           console.error("Error retrieving photo:", error);
         }
