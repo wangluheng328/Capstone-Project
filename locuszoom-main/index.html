@@ -200,6 +200,9 @@
       async function retrieveDeltaSVM() {
         // Get the parameter from the input box
         var chr_position_allele = document.getElementById("chr_position_allele").value;
+        var chromosome = document.getElementById("inputChromosome").value;
+        var start = document.getElementById("inputStart").value;
+        var end = document.getElementById("inputEnd").value;
         
         var deltaSVMUrl = "http://18.223.115.109:8101/generate_deltasvm_plot"
         var variantCREUrl = "http://3.15.180.14:8100/generate_CRE_variant_plot"
@@ -211,7 +214,8 @@
         var reqDataCRE = {
           chromosome: chromosome,
           start: start,
-          end: end
+          end: end,
+          chr_position_allele:chr_position_allele
         };
         
 
