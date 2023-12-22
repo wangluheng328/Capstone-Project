@@ -17,7 +17,7 @@ CORS(app)
 
 def plot_tpm_violin(gene):
     # Connect to database
-    conn = sqlite3.connect(r"C:\Users\Demon-Z\OneDrive\Documents\DSGA-1006 Capstone\图4\bulk-gex_v8_rna-seq_tpms-by-tissue_gene_tpm_2017-06-05_v8_adrenal_gland.gct\tpm.db")
+    conn = sqlite3.connect(r"/root/Capstone-Project/TPM/tpm.db")
     cursor = conn.cursor()
 
     # Get list of tables in the database
