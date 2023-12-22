@@ -39,7 +39,7 @@ def plot_tpm_violin(gene):
             positions.append(i)
 
     # Plot
-    sns.violinplot(data=all_data, positions=positions, scale='width')
+    sns.violinplot(data=all_data, x=positions, scale='width')
     plt.xticks(positions, tables, fontsize=24)
     plt.xlabel('Tissue Name', fontsize=24)
     plt.ylabel('TPM', fontsize=24)
