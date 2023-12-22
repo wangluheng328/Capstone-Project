@@ -23,6 +23,7 @@ def plot_tpm_violin(gene):
     # Get list of tables in the database
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = [row[0] for row in cursor.fetchall()]
+    print(len(tables))
 
     # Create graphs
     plt.figure(figsize=(20, 10))
