@@ -87,6 +87,39 @@ def generate_CRE_plot():
     # Send the plot as a response
     return send_file(buf, mimetype='image/jpeg')
 
+
+@app.route('/generate_CRE_variant_plot', methods=['POST'])
+def generate_CRE_variant_plot():
+    
+    start_time = time.time()
+    
+    data = request.get_json()
+    
+    chrom = data.get('chromosome')
+    start_pos = data.get('start')
+    end_pos = data.get('end', False)
+    
+    variant_id = data.get('chr_position_allele')
+    variant_pos = int(variant_id.split(':')[1].split('_')[0])
+
+    # Call the plot function
+    draw_CRE_barchart(chrom, start_pos, end_pos)
+    plt.axvline(x=variant_pos, color='orange', linestyle='-')
+
+    # Save the plot to a BytesIO object
+    buf = io.BytesIO()
+    plt.savefig(buf, format='jpeg', dpi = 400, bbox_inches = 'tight')
+    plt.close()
+    buf.seek(0)
+    
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Time taken to generate the image: {elapsed_time} seconds")
+
+    # Send the plot as a response
+    return send_file(buf, mimetype='image/jpeg')
+
+
 @app.route('/test')
 def test():
     return "Connection Success!"

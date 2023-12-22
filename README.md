@@ -21,6 +21,10 @@ https://github.com/statgen/locuszoom
  indexing tool for genomic data:
 https://github.com/broadinstitute/dig-bioindex
 
+12/8 Ming
+
+- Used Flask framework to connect the frontend and the backend for CRE plot.
+- Simulated a frontend to test the backend and successfully generated plots.
 
 12/11 Zejun
 
@@ -29,7 +33,6 @@ https://github.com/broadinstitute/dig-bioindex
  - The database for TPM violin plot is stored locally in a MySQL database.
  - This local MySQL database will be moved to AWS RDS service.
  - For deltaSVM graph, we are currently using rsid to retrieve records but will switch to chromosome position + allele if we can find a way to store the "rsid-position+allele relation" file. 
-
 
 12/19 Wes
 
